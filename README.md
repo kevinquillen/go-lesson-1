@@ -1,4 +1,4 @@
-This is a solution in progress from "Get Programming in Go".
+This is a solution in progress from "Get Programming in Go" on page 41.
 
 The need is to create an app that generates ten random travel tickets with calculated pricing to Mars based on trip type and speed.
 
