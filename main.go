@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 )
 
@@ -13,11 +14,14 @@ func main() {
 
 	for total := 0; total < 10; total++ {
 		ticket := RandomTicket()
-		fmt.Printf("%v    %v    %v    %v    100\n", ticket.carrier, ticket.tripLength, ticket.tripType, ticket.departureDate)
+
+		// logic here to determine price based on distance, trip type, carrier speed
+
+		fmt.Printf("%v    %v    %v    %v    $100\n", ticket.carrier, ticket.tripLength, ticket.tripType, ticket.departureDate)
 	}
 }
 
-// RandomTicket - factory method to return a new ticket.
+// RandomTicket - returns a randomized ticket.
 func RandomTicket() *Ticket {
 	const (
 		departureDate = "2020-10-21"
@@ -29,11 +33,13 @@ func RandomTicket() *Ticket {
 	carriers := [3]string{"Space Adventures", "Virgin Galactic", "Space X"}
 	tripTypes := [2]string{"Round Trip", "One Way"}
 
+	rand.Seed(time.Now().UnixNano())
+
 	departs, _ := time.Parse(layoutISO, departureDate)
 
 	return &Ticket{
-		carrier:       carriers[0],
-		tripType:      tripTypes[0],
+		carrier:       carriers[rand.Intn(len(carriers))],
+		tripType:      tripTypes[rand.Intn(len(tripTypes))],
 		tripLength:    30,
 		departureDate: departs.Format(layoutUS),
 	}
