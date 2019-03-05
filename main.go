@@ -7,26 +7,15 @@ import (
 )
 
 func main() {
-	const distanceToMars = 62100000
-	const basePrice = 1000
-
 	// This affects random generation in the rest of the program
 	rand.Seed(time.Now().UnixNano())
 
-	fmt.Println("Spaceline    Days    Trip-Type    Price (in millions)")
+	fmt.Println("Spaceline    Days    Trip-Type    Price")
 	fmt.Print("=====================================================\n\n")
 
 	for total := 0; total < 10; total++ {
 		ticket := RandomTicket()
-		var ticketPrice = basePrice
-
-		// logic here to determine price based on distance, trip type, carrier speed
-		// price should likely be part of the ticket struct itself based on other properties
-		if ticket.tripType == "Round Trip" {
-			ticketPrice = (ticketPrice * 5)
-		}
-
-		fmt.Printf("%v    %v    %v    $%v\n", ticket.carrier, ticket.tripLength, ticket.tripType, ticketPrice)
+		fmt.Printf("%v    %v    %v    $%vM\n", ticket.carrier, ticket.tripLength, ticket.tripType, ticket.tripPrice)
 	}
 
 	fmt.Print("\n=====================================================")
@@ -35,26 +24,58 @@ func main() {
 // RandomTicket - returns a randomized ticket.
 func RandomTicket() *Ticket {
 	const (
-		departureDate = "2020-10-21"
-		layoutISO     = "2006-01-02"
-		layoutUS      = "January 2, 2006"
+		departureDate  = "2020-10-21"
+		layoutISO      = "2006-01-02"
+		layoutUS       = "January 2, 2006"
+		basePrice      = 10
+		distanceToMars = 62100000
 	)
 
 	// is there a better / more normalized way to do this?
 	carriers := [3]string{"Space Adventures", "Virgin Galactic", "Space X"}
 	tripTypes := [2]string{"Round Trip", "One Way"}
 	departs, _ := time.Parse(layoutISO, departureDate)
+	tripLength := random(20, 50)
+	price := basePrice
+
+	selectedCarrier := carriers[rand.Intn(len(carriers))]
+	selectedType := tripTypes[rand.Intn(len(tripTypes))]
+
+	// Modify price based on carrier, slowest to fastest
+	switch selectedCarrier {
+	case "Space Adventures":
+		// Modify
+		break
+	case "Virgin Galactic":
+		// Modify
+		break
+	case "Space X":
+		// Modify
+		break
+	default:
+		break
+	}
+
+	// logic here to determine price based on distance, trip type, carrier speed
+	// price should likely be part of the ticket struct itself based on other properties
+
+	// Round trip tickets are double.
+	if selectedType == "Round Trip" {
+		price = (price * 2)
+	}
 
 	return &Ticket{
-		carrier:       carriers[rand.Intn(len(carriers))],
-		tripType:      tripTypes[rand.Intn(len(tripTypes))],
-		tripLength:    random(20, 50),
+		carrier:       selectedCarrier,
+		tripType:      selectedType,
+		tripLength:    tripLength,
 		departureDate: departs.Format(layoutUS),
+		tripPrice:     price,
 	}
 }
 
-// This does not exist in Go?
-func random(min, max int) int {
+// This function does not exist in Go?
+func random(min int, max int) int {
+	// Should be a check here to throw an error if max is less than the minimum passed.
 	return rand.Intn(max-min) + min
 }
 
@@ -64,4 +85,5 @@ type Ticket struct {
 	tripType      string
 	tripLength    int
 	departureDate string
+	tripPrice     int
 }
