@@ -8,19 +8,28 @@ import (
 
 func main() {
 	const distanceToMars = 62100000
+	const basePrice = 1000
 
+	// This affects random generation in the rest of the program
 	rand.Seed(time.Now().UnixNano())
 
 	fmt.Println("Spaceline    Days    Trip-Type    Price (in millions)")
-	fmt.Println("=====================================================")
+	fmt.Print("=====================================================\n\n")
 
 	for total := 0; total < 10; total++ {
 		ticket := RandomTicket()
+		var ticketPrice = basePrice
 
 		// logic here to determine price based on distance, trip type, carrier speed
+		// price should likely be part of the ticket struct itself based on other properties
+		if ticket.tripType == "Round Trip" {
+			ticketPrice = (ticketPrice * 5)
+		}
 
-		fmt.Printf("%v    %v    %v    $100\n", ticket.carrier, ticket.tripLength, ticket.tripType)
+		fmt.Printf("%v    %v    %v    $%v\n", ticket.carrier, ticket.tripLength, ticket.tripType, ticketPrice)
 	}
+
+	fmt.Print("\n=====================================================")
 }
 
 // RandomTicket - returns a randomized ticket.
