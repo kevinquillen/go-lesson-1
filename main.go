@@ -41,19 +41,19 @@ func RandomTicket() *Ticket {
 	selectedCarrier := carriers[rand.Intn(len(carriers))]
 	selectedType := tripTypes[rand.Intn(len(tripTypes))]
 
-	// Modify price based on carrier, slowest to fastest
-	switch selectedCarrier {
-	case "Space Adventures":
-		// Modify
-		break
-	case "Virgin Galactic":
-		// Modify
-		break
-	case "Space X":
-		// Modify
-		break
-	default:
-		break
+	// Modify price based on trip length
+	if tripLength < 25 {
+		// Very speedy! Premium cost.
+		price = (price * 4)
+	}
+
+	if tripLength >= 25 && tripLength <= 35 {
+		// Average speed.
+		price = (price * 2)
+	}
+
+	if tripLength > 35 {
+		// Woof. Very slow!
 	}
 
 	// logic here to determine price based on distance, trip type, carrier speed
@@ -75,7 +75,7 @@ func RandomTicket() *Ticket {
 
 // This function does not exist in Go?
 func random(min int, max int) int {
-	// Should be a check here to throw an error if max is less than the minimum passed.
+	// Should be a check here to throw an error if max is less than the minimum passed?
 	return rand.Intn(max-min) + min
 }
 
