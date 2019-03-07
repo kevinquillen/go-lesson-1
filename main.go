@@ -7,16 +7,32 @@ import (
 	"time"
 )
 
-func main() {
-	// This affects random generation in the rest of the program
-	rand.Seed(time.Now().UnixNano())
+// Ticket holds information about a ticket.
+type Ticket struct {
+	tripType      string
+	tripLength    int
+	departureDate string
+	tripPrice     int
+	ship          *Ship
+}
 
+// Ship holds information about a ship.
+type Ship struct {
+	carrier string
+	speed   int
+}
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+func main() {
 	fmt.Println("Carrier     Speed         Days     Type     Price")
 	fmt.Print("=====================================================\n\n")
 
 	for total := 0; total < 10; total++ {
 		ticket := RandomTicket()
-		fmt.Printf("%v     %v km/h     %v     %v     $%vM\n", ticket.ship.carrier, ticket.ship.speed, ticket.tripLength, ticket.tripType, ticket.tripPrice)
+		fmt.Printf("%v     %v km/s     %v     %v     $%vM\n", ticket.ship.carrier, ticket.ship.speed, ticket.tripLength, ticket.tripType, ticket.tripPrice)
 	}
 
 	fmt.Print("\n=====================================================")
@@ -28,38 +44,46 @@ func RandomTicket() *Ticket {
 		departureDate  = "2020-10-13"
 		layoutISO      = "2006-01-02"
 		layoutUS       = "January 2, 2006"
-		basePrice      = 10
 		distanceToMars = 62100000
 	)
+
+	var price int
+	var err error
 
 	// is there a better / more normalized way to do this (pick a random value)?
 	tripTypes := [2]string{"Round Trip", "One Way"}
 	departs, _ := time.Parse(layoutISO, departureDate)
-	tripLength, err := random(20, 50)
-	price := basePrice
+	ship := GenerateShip()
+
+	// Slower ships are cheaper, but this is kludgey trying to learn how to handle an error.
+	if ship.speed == 16 {
+		price, err = randomRange(15, 36)
+	} else {
+		price, err = randomRange(36, 50)
+	}
 
 	// Exception needed? I don't see how we can continue otherwise, if the programmer passed unexpected argument values.
 	if err != nil {
 		panic(err)
 	}
 
-	// selectedCarrier := carriers[rand.Intn(len(carriers))]
-	selectedType := tripTypes[rand.Intn(len(tripTypes))]
-
 	// Now that we have Ship with designated speed, we should be able to calculate
-	// a price based on speed, distanceToMars, and trip length
+	// a price based on speed, and distanceToMars
+	tripLength := distanceToMars / ((ship.speed * 3600) * 24)
 
-	// Round trip tickets are double.
+	selectedType := tripTypes[rand.Intn(2)]
+
+	// Round trip tickets are double price.
 	if selectedType == "Round Trip" {
 		price = (price * 2)
 	}
 
 	return &Ticket{
-		tripType:      selectedType,
+		tripType:      tripTypes[rand.Intn(2)],
 		tripLength:    tripLength,
 		departureDate: departs.Format(layoutUS),
 		tripPrice:     price,
-		ship:          GenerateShip(),
+		ship:          ship,
 	}
 }
 
@@ -77,25 +101,10 @@ func GenerateShip() *Ship {
 }
 
 // This function does not exist in Go?
-func random(min int, max int) (int, error) {
+func randomRange(min int, max int) (int, error) {
 	if max <= min {
 		return -1, errors.New("random func: maximum value passed should be greater than the minimum")
 	}
 
 	return (rand.Intn(max-min) + min), nil
-}
-
-// Ticket holds information about a ticket.
-type Ticket struct {
-	tripType      string
-	tripLength    int
-	departureDate string
-	tripPrice     int
-	ship          *Ship
-}
-
-// Ship holds information about a ship.
-type Ship struct {
-	carrier string
-	speed   int
 }
