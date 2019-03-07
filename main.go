@@ -25,19 +25,20 @@ func main() {
 // RandomTicket - returns a randomized ticket.
 func RandomTicket() *Ticket {
 	const (
-		departureDate  = "2020-10-21"
+		departureDate  = "2020-10-13"
 		layoutISO      = "2006-01-02"
 		layoutUS       = "January 2, 2006"
 		basePrice      = 10
 		distanceToMars = 62100000
 	)
 
-	// is there a better / more normalized way to do this?
+	// is there a better / more normalized way to do this (pick a random value)?
 	tripTypes := [2]string{"Round Trip", "One Way"}
 	departs, _ := time.Parse(layoutISO, departureDate)
 	tripLength, err := random(20, 50)
 	price := basePrice
 
+	// Exception needed? I don't see how we can continue otherwise, if the programmer passed unexpected argument values.
 	if err != nil {
 		panic(err)
 	}
@@ -45,20 +46,8 @@ func RandomTicket() *Ticket {
 	// selectedCarrier := carriers[rand.Intn(len(carriers))]
 	selectedType := tripTypes[rand.Intn(len(tripTypes))]
 
-	// Modify price based on trip length
-	if tripLength < 25 {
-		// Very speedy! Premium cost.
-		price = (price * 4)
-	}
-
-	if tripLength >= 25 && tripLength <= 35 {
-		// Average speed.
-		price = (price * 2)
-	}
-
-	if tripLength > 35 {
-		// Woof. Very slow!
-	}
+	// Now that we have Ship with designated speed, we should be able to calculate
+	// a price based on speed, distanceToMars, and trip length
 
 	// Round trip tickets are double.
 	if selectedType == "Round Trip" {
@@ -77,21 +66,13 @@ func RandomTicket() *Ticket {
 // GenerateShip generate a random ship.
 func GenerateShip() *Ship {
 	carriers := [3]string{"Space Adventures", "Virgin Galactic", "Space X"}
-	randomCarrier := carriers[rand.Intn(len(carriers))]
-	var speed = 0
-
-	switch randomCarrier {
-	case "Space X":
-		speed = 32
-		break
-	default:
-		speed = 16
-		break
-	}
+	speeds := [2]int{16, 30}
+	randomCarrier := carriers[rand.Intn(3)]
+	randomSpeed := speeds[rand.Intn(2)]
 
 	return &Ship{
 		carrier: randomCarrier,
-		speed:   speed,
+		speed:   randomSpeed,
 	}
 }
 
